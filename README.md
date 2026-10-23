@@ -1,63 +1,58 @@
+# Revenue Analysis in Python
 
-## Revenue-Data-Analysis-with-Python
+**What drives revenue from new users in their first week, and does it differ by gender and country?**
 
-While this was prompted by a straightforward question concerning how I'd ordinarialy clean data (to which I responded that it really depends what BI software/platform you're using), this piece has come about by complete chance. Quite simply, I was mistakenly sent a technical test for a mid-senior analyst role. The data looked good enough to work with, so I thought I'd make my way through it. It's not complete all in one go as I haven't had any real stretch of time at all to dedicate to it so I'll be finishing it up when I can sit down with it. It will probably look a lot less polished like this but I actually prefer that. The questions look straightforward though.
+An exploratory and statistical analysis of user activity and revenue data for a consumer product, built in Python. It covers data cleaning, descriptive statistics, visualisation, hypothesis testing and a regression model to predict first-week revenue.
 
+**Status:** analysis and prediction complete; significance of country as a predictor being finalised.
 
-### Questions
+## Data
 
-#### Question 1
+Two tables, joined on `UserId`:
 
-##### How many female users are in the dataset?
+- **Users:** registration date, date of birth, gender and country.
+- **Activity:** daily revenue per user.
 
-For all users with missing gender information, please set the gender field to the most common gender in the dataset.
+After merging, the dataset has 22,642 activity records across 5,797 users.
 
-### Question 2
+## Approach
 
-##### What is the mean revenue generated per user (ie across all dates)?
+1. **Preparation:** merged the tables, converted date fields to proper date types and checked for missing values.
+2. **Data quality:** the null check showed no missing genders, but the `Gender` column contained blank strings. I stripped the whitespace and assigned those records the most common gender (male), following the rule set for the analysis.
+3. **Descriptive analysis:** revenue per user, comparing mean and median, plus the shape of the revenue distribution.
+4. **First-week revenue:** calculated days since registration for each activity record and isolated revenue from each user's first seven days.
+5. **Segment comparison:** average revenue by gender and country, visualised to show where the gender gap is largest.
+6. **Hypothesis testing:** checked normality with Shapiro-Wilk before choosing a test. The data is heavily skewed, so I used a Mann-Whitney U test rather than a t-test.
+7. **Modelling:** linear regression predicting first-week revenue from gender, age group and country.
 
-### Question 3
+## Key findings
 
-##### Compare the mean and the median revenue generated per user.
+| Question | Result |
+| --- | --- |
+| Female users | 1,412 of 5,797 users (about 24%) |
+| Mean vs median revenue per user | Mean 512.69, median 80.00 |
+| Average first-week revenue per user | 200.25 |
+| Largest male–female revenue gap | US: men average 192.82, women 71.59 (a gap of 121.24) |
+| Is the gender difference statistically significant? | **No.** Mann-Whitney U, p = 0.23 at α = 0.05 |
+| Predicted first-week revenue for a US woman aged 30–35 | 65.61 (linear regression on gender, age group and country) |
+| Is country a significant predictor of revenue? | *In progress* |
 
-How do you interpret the results of these calculations?
+## What this means
 
-### Question 4
+- **A few users drive most of the revenue.** The mean is more than six times the median, so a small group of high spenders accounts for a large share of the total. Averages alone would overstate what a typical user is worth, which matters for forecasting and for setting acquisition costs.
+- **The gender gap looks large but isn't statistically reliable.** Men spend more on average, especially in the US, but across all users the difference isn't significant. It shouldn't drive targeting decisions without more evidence.
+- **The gap varies by country.** Men outspend women most in the US, then Germany and the UK. In France the two are roughly equal, and in the "Other" group women spend slightly more. Country-level analysis tells a different story from the overall average.
 
-##### Please visualise the distribution of the revenues per user.
+## Limitations
 
-### Question 5
+- Assigning blank genders to the most common value, as the analysis rule required, slightly inflates the male count.
+- The revenue distribution is heavily skewed. A linear regression on raw revenue will be sensitive to outliers, so a log transformation or a non-parametric model would be worth testing.
+- The data contains no information on product, channel or marketing, which limits how much of the revenue difference can be explained.
 
-##### What is the average revenue generated per user in the first week?
+## Tools
 
-Merge the two datasets and calculate the days since registration for each user and date in the activity table. Please consider all revenue generated in the first 7 days after registration for each user.
+Python · pandas · NumPy · seaborn · Matplotlib · SciPy
 
-### Question 6
+## Files
 
-##### In this dataset men generated a higher revenue than women, on average. In which country is this difference biggest?
-
-### Question 7
-
-##### Please visualise the relationship between country, gender and revenue in the first week with an appropriate chart.
-
-### Question 8
-
-##### Is this difference in revenue between men and women statistically significant? (Yes / No)
-
-Please use a significance level of 5% and an appropriate statistical test.
-
-### Question 9
-
-##### Please predict the revenue of a new user.
-
-Build a linear regression model and predict the revenue generated in the first week for a user based on the following variables: Gender, AgeGroup and Country. Please do not use any higher order or interaction terms.
-
-The AgeGroup variable should group the age of each user into one of the following bins: Less than 25years, 25-30, 30-35, 35-40, 40-45, 45-50, 60-65 and 65+.
-
-What revenue in week 1 do you predict for a female customer from the US aged 30 - 35?
-
-### Question 10
-
-##### Is the country of the customer statistically significant when predicting the revenue? (Yes / No)
-
-Please use a significance level of 0.1.
+- `Revenue_Analysis.ipynb`: the full analysis with code, outputs and charts.
